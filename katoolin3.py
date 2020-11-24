@@ -325,6 +325,7 @@ PACKAGES = {
         "davtest",
         "dirb",
         "dirbuster",
+        "ffuf",
         "funkload",
         "gobuster",
         "hurl",
@@ -963,12 +964,14 @@ def view_packages(cat):
     while True:
         sel = Selection("Select a Package")
 
+        sel.add_choice("BACK", Selection.BACK)
+
         for pkg in sorted(PACKAGES[cat]):
             nice_pkg = nice_name(pkg)
 
             try:
                 if APT[pkg].is_installed:
-                    sel.add_choice(nice_pkg, pkg, Terminal.black)
+                    sel.add_choice(nice_pkg, pkg, Terminal.green)
                 else:
                     sel.add_choice(nice_pkg, pkg)
             except KeyError:
@@ -977,7 +980,6 @@ def view_packages(cat):
         if len(sel) > 1:
             sel.add_choice("ALL", Selection.ALL)
         sel.add_choice("HELP", Selection.HELP)
-        sel.add_choice("BACK", Selection.BACK)
 
         choices = sel.get_choices()
         method = APT.install if isinstance(choices, InstallList) else APT.remove
@@ -1015,11 +1017,12 @@ def view_categories():
     """
     sel = Selection("Select a Category")
 
+    sel.add_choice("BACK", Selection.BACK)
+
     for cat in sorted(PACKAGES):
         sel.add_choice(cat, cat)
 
     sel.add_choice("HELP", Selection.HELP)
-    sel.add_choice("BACK", Selection.BACK)
 
     while True:
         choice = sel.get_choice()
@@ -1078,6 +1081,7 @@ def search():
 
 def main():
     sel = Selection("Main Menu")
+    sel.add_choice("Exit", Selection.BACK)
     sel.add_choice("View Categories", view_categories)
     sel.add_choice("Install All", install_all_packages)
     sel.add_choice("Uninstall All", delete_all_packages)
@@ -1087,7 +1091,6 @@ def main():
     sel.add_choice("Install Kali Menu", lambda: APT.install(["kali-menu"]))
     sel.add_choice("Uninstall old katoolin", lambda: handle_old_katoolin(force=True))
     sel.add_choice("Help", print_help)
-    sel.add_choice("Exit", Selection.BACK)
 
     while True:
         choice = sel.get_choice()
